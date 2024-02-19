@@ -21,6 +21,7 @@ import { useAxios } from "../../axios";
 import { STATES } from "./states";
 import { useTimeout } from "../../hooks/useTimeout";
 import { PossibleFlows } from "../../contexts/RouteContext/types";
+import dayjs from "dayjs";
 
 const phoneRegex = new RegExp(
   /^\+1\s\(([2-9]{1}[0-9]{2})\)\s([2-9]{1}[0-9]{2})-([0-9]{4})$/
@@ -61,6 +62,7 @@ export const Winner = () => {
     register,
     formState: { errors },
     control,
+    setError,
   } = useForm<SchemaType>({
     resolver: zodResolver(schema),
   });
@@ -92,27 +94,35 @@ export const Winner = () => {
     async (formData) => {
       const { name, address, city, state, month, day, year, phone_number } =
         formData;
-      const body = {
-        email,
-        name,
-        address,
-        city,
-        state,
-        phone_number: phone_number.replace(/\D/g, ""),
-        birthdate: new Date(`${month} ${day}, ${year}`).toISOString(),
-      };
 
-      try {
-        const { data } = await submit({
-          data: body,
-        });
-        if (data.response === PossibleResponses.sent)
-          setPath("/winner-confirmation");
-      } catch (e) {
-        console.log(e);
+      const birthdate = new Date(`${month} ${day}, ${year}`).toISOString();
+      const isAbove18 = dayjs().diff(birthdate, "year") >= 18;
+
+      if (isAbove18) {
+        const body = {
+          email,
+          name,
+          address,
+          city,
+          state,
+          phone_number: phone_number.replace(/\D/g, ""),
+          birthdate: new Date(`${month} ${day}, ${year}`).toISOString(),
+        };
+
+        try {
+          const { data } = await submit({
+            data: body,
+          });
+          if (data.response === PossibleResponses.sent)
+            setPath("/winner-confirmation");
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        setError("year", { message: "You must be 18 years or older" });
       }
     },
-    [email, setPath, submit]
+    [email, setError, setPath, submit]
   );
 
   return (

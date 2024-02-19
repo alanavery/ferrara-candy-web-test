@@ -1,12 +1,12 @@
 export const PRIZES = {
-  'Water bottle': 10,
-  'Cooler Bag': 10,
-  Backpack: 11.8,
-  'Picnic blanket': 10,
-  Hat: 10,
-  'Gas card': 25,
-  'Yeti cooler': 240,
-  'Hotel gift card': 100
+  'Water bottle': '$10',
+  'Cooler Bag': '$10',
+  Backpack: '$11.80',
+  'Picnic blanket': '$10',
+  Hat: '$10',
+  'Gas card': '$25',
+  'Yeti cooler': '$240',
+  'Hotel gift card': '$100'
 }
 
 export const TABLE_ROWS: Array<{

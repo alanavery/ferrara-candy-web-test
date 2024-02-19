@@ -187,7 +187,7 @@ export const OfficialRules = () => {
                 <td>{index + 1}</td>
                 <td>{row.date}</td>
                 <td>{row.prize}</td>
-                <td>${PRIZES[row.prize]}</td>
+                <td>{PRIZES[row.prize]}</td>
               </tr>
             ))}
           </tbody>

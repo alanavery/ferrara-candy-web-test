@@ -94,6 +94,7 @@ export const Scan = () => {
     if (!initiated.current) {
       initiated.current = true;
       setTimeout(startInterval, 1500);
+
       return () => {
         interval.current && clearTimeout(interval.current);
       };
