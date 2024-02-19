@@ -25,7 +25,7 @@ export const Instructions = () => {
             },
             {
               number: 3,
-              text: "Center the pack on your screen to begin scanning.",
+              text: "Center the logo on your screen to begin scanning.",
             },
           ]}
         />
