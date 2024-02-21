@@ -4,8 +4,7 @@ import axios from 'axios'
 export const useAxios = makeUseAxios({
   cache: false,
   axios: axios.create({
-    baseURL:
-      'https://candy-api.ferrara.dev.ampagency.digital',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',

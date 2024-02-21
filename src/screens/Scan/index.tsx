@@ -8,33 +8,20 @@ import { useAxios } from "../../axios";
 import { useFormDataContext } from "../../hooks/useFormDataContext";
 import { PrizeResponse, usePrizeResponse } from "../../hooks/usePrizeResponse";
 
-const resizeImage = (src: string, width = 600) => {
-  return new Promise<string>((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const elem = document.createElement("canvas");
-      const scaleFactor = width / img.width;
-      elem.width = width;
-      elem.height = img.height * scaleFactor;
-      const ctx = elem.getContext("2d");
-      ctx?.drawImage(img, 0, 0, elem.width, elem.height);
-      const data = ctx?.canvas.toDataURL("image/jpeg", 0.75);
-      resolve(data || "");
-    };
-    img.src = src;
-  });
-};
-
-const srcToBlob = async (src: string) => {
-  const res = await fetch(src);
-  const blob = await res.blob();
-  return blob;
-};
+declare global {
+  interface Window {
+    tmImage: any;
+  }
+}
 
 export const Scan = () => {
   const mediaRef = useRef<Webcam>(null);
-  const interval = useRef<number | null>(null);
+  const interval = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initiated = useRef(false);
+  const successfulScan = useRef(false);
+  const URL = "https://teachablemachine.withgoogle.com/models/YdvUHcLXP/";
+  const model = useRef<any>(null);
+  const maxPredictions = useRef<number>(0);
 
   useAlertOnUnload();
 
@@ -55,24 +42,55 @@ export const Scan = () => {
 
   const capture = useCallback(async () => {
     try {
-      const imageSrc = mediaRef.current?.getScreenshot();
+      const imageSrc = mediaRef.current?.getCanvas();
       if (imageSrc) {
-        const form = new FormData();
-        const resizedImage = await resizeImage(imageSrc);
-        const blob = await srcToBlob(resizedImage);
-        form.append("image", blob, "image.jpeg");
-        Object.entries(formData).forEach(([key, value]) => {
-          form.append(key, value);
-        });
-        const { data } = await submit({
-          data: form,
-        });
-        const responseData = data;
-        setPrizeResponse(responseData, {
-          successCallback: () => {
-            interval.current && clearTimeout(interval.current);
-          },
-        });
+        const prediction = await model.current.predict(imageSrc);
+
+        for (let i = 0; i < maxPredictions.current; i++) {
+          const className = prediction[i].className;
+          const probability = prediction[i].probability.toFixed(2);
+
+          if (className !== "No Candy" && probability >= 0.9) {
+            let labelName = "";
+
+            successfulScan.current = true;
+
+            switch (className) {
+              case "Black Forest":
+                labelName = "black-forest";
+                break;
+              case "Laffy Taffy":
+                labelName = "laffy-taffy";
+                break;
+              case "Nerds":
+                labelName = "nerds";
+                break;
+              case "Sweetarts":
+                labelName = "sweetarts";
+                break;
+              case "Trolli":
+                labelName = "trolli";
+                break;
+              default:
+                break;
+            }
+
+            const form = new FormData();
+            form.append("label_name", labelName);
+            Object.entries(formData).forEach(([key, value]) => {
+              form.append(key, value);
+            });
+            const { data } = await submit({
+              data: form,
+            });
+            const responseData = data;
+            setPrizeResponse(responseData, {
+              successCallback: () => {
+                interval.current && clearTimeout(interval.current);
+              },
+            });
+          }
+        }
       } else {
         console.error("Image not available");
       }
@@ -83,21 +101,32 @@ export const Scan = () => {
 
   const startInterval = useCallback(() => {
     async function intervalFunction() {
-      await capture();
-      interval.current = setTimeout(intervalFunction, 250);
+      if (!successfulScan.current) {
+        await capture();
+        interval.current = setTimeout(intervalFunction, 250);
+      }
     }
 
     intervalFunction();
   }, [capture]);
 
   useEffect(() => {
-    if (!initiated.current) {
+    async function init() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      model.current = await window.tmImage.load(modelURL, metadataURL);
+      maxPredictions.current = model.current.getTotalClasses();
+
       initiated.current = true;
       setTimeout(startInterval, 1500);
-
       return () => {
         interval.current && clearTimeout(interval.current);
       };
+    }
+
+    if (!initiated.current) {
+      init();
     }
   }, [startInterval, capture]);
 

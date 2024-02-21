@@ -91,12 +91,10 @@ import { FormDataProvider } from "./contexts/FormDataContext";
 //   { path: "/animation", element: <Animation /> },
 // ]);
 
-ReactDOM.createRoot(
-  document.getElementById("root")!,
-).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FormDataProvider>
       <RouteProvider />
     </FormDataProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
