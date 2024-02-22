@@ -45,7 +45,7 @@ jobs:
           environment: ${ENVIRONMENT}
 
       # kics-scan ignore-block
-      - name: Deploy to AWS Lambda
+      - name: Deploy
         uses: ./.github/actions/deploy
         with:
           environment: ${ENVIRONMENT}
