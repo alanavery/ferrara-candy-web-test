@@ -331,7 +331,7 @@ export const Animation = ({
           <p>
             <span>SORRY!</span>
             <br />
-            {state === "lose" ? (
+            {state === "already-awarded" ? (
               <span>
                 PRIZE ALREADY
                 <br />
