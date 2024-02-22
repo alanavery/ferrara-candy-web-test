@@ -66,7 +66,7 @@ export const Scan = () => {
                 labelName = "nerds";
                 break;
               case "Sweetarts":
-                labelName = "sweetarts";
+                labelName = "sweet-tarts";
                 break;
               case "Trolli":
                 labelName = "trolli";
