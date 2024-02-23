@@ -19,7 +19,7 @@ export const Scan = () => {
   const interval = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initiated = useRef(false);
   const successfulScan = useRef(false);
-  const URL = "https://teachablemachine.withgoogle.com/models/YdvUHcLXP/";
+  const URL = "https://teachablemachine.withgoogle.com/models/uXSFnEyLf/";
   const model = useRef<any>(null);
   const maxPredictions = useRef<number>(0);
 
