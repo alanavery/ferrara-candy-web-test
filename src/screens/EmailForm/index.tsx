@@ -64,7 +64,7 @@ export const EmailForm = () => {
     } else {
       try {
         const labelArray = ['black-forest', 'laffy-taffy', 'nerds', 'sweet-tarts', 'trolli'];
-        const labelName = labelArray[Math.floor(Math.random() * labelArray.length)];
+        const labelName = labelArray[4];
 
         const form = new FormData();
         form.append("email", email);
