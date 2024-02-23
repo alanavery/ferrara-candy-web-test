@@ -45,7 +45,7 @@ export const EmailForm = () => {
 
   const [, submit] = useAxios<PrizeResponse>(
     {
-      url: "/amoe_prize_award",
+      url: "/image_recognition/award_prize",
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
@@ -63,10 +63,17 @@ export const EmailForm = () => {
       setPath("/instructions");
     } else {
       try {
-        const response = await submit({
-          data: { email },
+        const labelArray = ['black-forest', 'laffy-taffy', 'nerds', 'sweet-tarts', 'trolli'];
+        const labelName = labelArray[Math.floor(Math.random() * labelArray.length)];
+
+        const form = new FormData();
+        form.append("email", email);
+        form.append("label_name", labelName);
+        const { data } = await submit({
+          data: form,
         });
-        setPrizeResponse(response.data);
+        const responseData = data;
+        setPrizeResponse(responseData);
       } catch (e) {
         console.error(e);
       }
