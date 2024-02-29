@@ -10,6 +10,9 @@ export enum PossibleResponses {
   NOT_CUSTOM_LABEL = "Product not found, please try again",
   TRY_AGAIN_TOMORROW = "Try again tomorrow",
   EMAIL_NOT_FOUND = "Email not found",
+  ALREADY_ENTERED = "Already entered today",
+  ALREADY_WON = "Won less than a week ago",
+  READY = "Ready to enter",
 }
 
 export type PrizeResponse = {
@@ -24,31 +27,48 @@ export const usePrizeResponse = () => {
     (
       data: PrizeResponse,
       options?: {
-        successCallback?: () => void;
+        successCallback?: (message: string) => void;
         failCallback?: () => void;
       }
     ) => {
       const { successCallback, failCallback } = options ?? {};
       const { response, candy_name } = data;
-      const candyKeys = Object.keys(CandyMap);
-      const randomIndex = Math.floor(
-        Math.floor(Math.random() * candyKeys.length)
-      );
-      const randomCandyKey = candyKeys[randomIndex] ?? "sweet-tarts";
-      const candy: PossibleCandies =
-        CandyMap[candy_name ?? randomCandyKey] ?? "st";
-      if (response === PossibleResponses.WIN) {
-        successCallback?.();
-        setPath(`/animation/win/${candy}`);
-      } else if (response === PossibleResponses.LOSE) {
-        successCallback?.();
-        setPath(`/animation/lose/${candy}`);
-      } else if (response === PossibleResponses.TRY_AGAIN_TOMORROW) {
-        successCallback?.();
-        setPath(`/animation/already-awarded/${candy}`);
+
+      if (
+        [
+          PossibleResponses.WIN,
+          PossibleResponses.LOSE,
+          PossibleResponses.TRY_AGAIN_TOMORROW,
+        ].includes(response)
+      ) {
+        const candyKeys = Object.keys(CandyMap);
+        const randomIndex = Math.floor(Math.random() * candyKeys.length);
+        const randomCandyKey = candyKeys[randomIndex] ?? "sweet-tarts";
+        const candy: PossibleCandies =
+          CandyMap[candy_name ?? randomCandyKey] ?? "st";
+
+        if (response === PossibleResponses.WIN) {
+          successCallback?.("");
+          setPath(`/animation/win/${candy}`);
+        } else if (response === PossibleResponses.LOSE) {
+          successCallback?.("");
+          setPath(`/animation/lose/${candy}`);
+        } else {
+          successCallback?.("");
+          setPath(`/animation/already-awarded/${candy}`);
+        }
       } else if (response === PossibleResponses.EMAIL_NOT_FOUND) {
-        successCallback?.();
+        successCallback?.("");
         setPath(flow === PossibleFlows.AMOE ? "/amoe" : "/email-form");
+      } else if (response === PossibleResponses.ALREADY_ENTERED) {
+        successCallback?.("Only one chance per day. Try again tomorrow!");
+      } else if (response === PossibleResponses.ALREADY_WON) {
+        successCallback?.(
+          "Users may only win once per week. Try again next week!"
+        );
+      } else if (response === PossibleResponses.READY) {
+        successCallback?.("");
+        setPath("/instructions");
       } else {
         failCallback?.();
       }

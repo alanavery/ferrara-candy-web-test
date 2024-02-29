@@ -1,10 +1,10 @@
+import { useRef } from "react";
 import { Button } from "../../components/Button";
 import { Checkbox } from "../../components/Checkbox";
 import { Text } from "../../components/Text";
 import { TextInput } from "../../components/TextInput";
 import { Title } from "../../components/Title";
 import styles from "./index.module.css";
-
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,16 +40,24 @@ export const EmailForm = () => {
     { manual: true }
   );
 
-  const { flow, setPath } = useRouteContext();
+  const { flow } = useRouteContext();
   const { spreadFormData } = useFormDataContext();
+  const errorMessage = useRef("");
 
   const [, submit] = useAxios<PrizeResponse>(
     {
-      url: "/image_recognition/award_prize",
+      url: "/check_user_history",
       method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+    { manual: true }
+  );
+
+  const [, amoeSubmit] = useAxios<PrizeResponse>(
+    {
+      url: "/amoe_prize_award",
+      method: "POST",
+      headers: { "Content-Type": "multipart/form-data" },
     },
     { manual: true }
   );
@@ -59,24 +67,37 @@ export const EmailForm = () => {
   const onSubmit: SubmitHandler<SchemaType> = async (data) => {
     const { email } = data;
     spreadFormData({ email });
-    if (flow === PossibleFlows.MOBILE) {
-      setPath("/instructions");
-    } else {
-      try {
-        const labelArray = ['black-forest', 'laffy-taffy', 'nerds', 'sweet-tarts', 'trolli'];
-        const labelName = labelArray[4];
 
-        const form = new FormData();
-        form.append("email", email);
+    try {
+      const form = new FormData();
+      let responseData;
+
+      form.append("email", email);
+
+      if (flow === PossibleFlows.MOBILE) {
+        const response = await submit({ data: form });
+        responseData = response.data;
+      } else {
+        const labelArray = [
+          "black-forest",
+          "laffy-taffy",
+          "nerds",
+          "sweet-tarts",
+          "trolli",
+        ];
+        const randomIndex = Math.floor(Math.random() * labelArray.length);
+        const labelName = labelArray[randomIndex];
+
         form.append("label_name", labelName);
-        const { data } = await submit({
-          data: form,
-        });
-        const responseData = data;
-        setPrizeResponse(responseData);
-      } catch (e) {
-        console.error(e);
+        const response = await amoeSubmit({ data: form });
+        responseData = response.data;
       }
+
+      setPrizeResponse(responseData, {
+        successCallback: (message) => (errorMessage.current = message),
+      });
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -122,6 +143,7 @@ export const EmailForm = () => {
           <Button disabled={loading} type="submit">
             submit
           </Button>
+          <div className={styles.message}>{errorMessage.current}</div>
         </form>
       </div>
     </Layout>
