@@ -36,6 +36,7 @@ enum PossibleResponses {
 export type FormResponse = {
   response: PossibleResponses;
   success: boolean;
+  apiResponse: any;
 };
 
 const schema = z.object({
@@ -114,6 +115,7 @@ export const Winner = () => {
             data: body,
           });
           if (data.response === PossibleResponses.sent)
+            console.log('Gigya API response:', JSON.parse(data.apiResponse));
             setPath("/winner-confirmation");
         } catch (e) {
           console.log(e);

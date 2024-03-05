@@ -61,10 +61,12 @@ export const usePrizeResponse = () => {
         successCallback?.("");
         setPath(flow === PossibleFlows.AMOE ? "/amoe" : "/email-form");
       } else if (response === PossibleResponses.ALREADY_ENTERED) {
-        successCallback?.("Only one chance per day. Try again tomorrow!");
+        successCallback?.(
+          "Thank you for submitting your email, this email has already been submitted today. Please try again tomorrow."
+        );
       } else if (response === PossibleResponses.ALREADY_WON) {
         successCallback?.(
-          "Users may only win once per week. Try again next week!"
+          "Thank you for participating, it looks like you have already won this week. Please try again in one week."
         );
       } else if (response === PossibleResponses.READY) {
         successCallback?.("");
