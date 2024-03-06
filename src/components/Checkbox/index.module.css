@@ -22,6 +22,9 @@
 
 .input input {
   margin-left: 0;
+  min-width: 1.3rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .center {

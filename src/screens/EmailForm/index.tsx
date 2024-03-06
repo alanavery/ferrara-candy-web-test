@@ -17,9 +17,7 @@ import { PrizeResponse, usePrizeResponse } from "../../hooks/usePrizeResponse";
 
 const schema = z.object({
   email: z.string().email(),
-  confirmation: z.boolean().refine((val) => !!val, {
-    message: "You must agree to the terms and conditions",
-  }),
+  confirmation: z.boolean(),
 });
 type SchemaType = z.infer<typeof schema>;
 
@@ -30,6 +28,10 @@ export const EmailForm = () => {
     formState: { errors },
   } = useForm<SchemaType>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      confirmation: true,
+    },
   });
 
   const [{ loading }] = useAxios(
@@ -124,7 +126,6 @@ export const EmailForm = () => {
           <Checkbox
             center
             {...register("confirmation")}
-            required
             error={errors.confirmation?.message}
           >
             Yes, I consent to Ferrara Candy Company and its affiliates using my
