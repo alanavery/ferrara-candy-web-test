@@ -6,8 +6,8 @@
 
 .input {
   color: var(--color-purple);
-  font-size: 0.8rem;
-  line-height: 0.8rem;
+  font-size: 0.875rem;
+  line-height: 1.2;
   margin: 0;
   text-align: start;
   align-items: start;

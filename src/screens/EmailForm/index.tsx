@@ -46,16 +46,16 @@ export const EmailForm = () => {
   const { spreadFormData } = useFormDataContext();
   const errorMessage = useRef("");
 
-  const [, submit] = useAxios<PrizeResponse>(
+  const [, submitOnMobile] = useAxios<PrizeResponse>(
     {
-      url: "/check_user_history",
+      url: "/check_if_user_entered_today",
       method: "POST",
       headers: { "Content-Type": "multipart/form-data" },
     },
     { manual: true }
   );
 
-  const [, amoeSubmit] = useAxios<PrizeResponse>(
+  const [, submitOnDesktop] = useAxios<PrizeResponse>(
     {
       url: "/amoe_prize_award",
       method: "POST",
@@ -77,7 +77,7 @@ export const EmailForm = () => {
       form.append("email", email);
 
       if (flow === PossibleFlows.MOBILE) {
-        const response = await submit({ data: form });
+        const response = await submitOnMobile({ data: form });
         responseData = response.data;
       } else {
         const labelArray = [
@@ -91,7 +91,7 @@ export const EmailForm = () => {
         const labelName = labelArray[randomIndex];
 
         form.append("label_name", labelName);
-        const response = await amoeSubmit({ data: form });
+        const response = await submitOnDesktop({ data: form });
         responseData = response.data;
       }
 
