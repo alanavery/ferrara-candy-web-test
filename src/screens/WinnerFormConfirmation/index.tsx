@@ -8,8 +8,8 @@ export const WinnerFormConfirmation = () => (
     <div className={styles.container}>
       <Title>REGISTRATION COMPLETE</Title>
       <Text>
-        You will receive a confirmation email. Don’t forget
-        to come back tomorrow for another chance to WIN!
+        You will receive a confirmation email. Don’t forget to come back in a
+        week for another chance to WIN!
       </Text>
     </div>
   </Layout>
