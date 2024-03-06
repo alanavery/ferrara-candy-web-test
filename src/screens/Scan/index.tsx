@@ -7,6 +7,7 @@ import { useAlertOnUnload } from "../../hooks/useAlertOnUnload";
 import { useAxios } from "../../axios";
 import { useFormDataContext } from "../../hooks/useFormDataContext";
 import { PrizeResponse, usePrizeResponse } from "../../hooks/usePrizeResponse";
+import { useRouteContext } from "../../hooks/useRouteContext";
 
 declare global {
   interface Window {
@@ -15,13 +16,16 @@ declare global {
 }
 
 export const Scan = () => {
+  const { setPath } = useRouteContext();
   const mediaRef = useRef<Webcam>(null);
-  const interval = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initiated = useRef(false);
-  const successfulScan = useRef(false);
+  const intervalId = useRef(0);
+  const delayId = useRef(0);
+  const timeLimitId = useRef(0);
+  const candy = useRef("");
   const URL = "https://teachablemachine.withgoogle.com/models/uXSFnEyLf/";
   const model = useRef<any>(null);
-  const maxPredictions = useRef<number>(0);
+  const maxPredictions = useRef(0);
 
   useAlertOnUnload();
 
@@ -41,8 +45,49 @@ export const Scan = () => {
   const setPrizeResponse = usePrizeResponse();
 
   const capture = useCallback(async () => {
+    const processScan = async () => {
+      let labelName = "";
+
+      switch (candy.current) {
+        case "Black Forest":
+          labelName = "black-forest";
+          break;
+        case "Laffy Taffy":
+          labelName = "laffy-taffy";
+          break;
+        case "Nerds":
+          labelName = "nerds";
+          break;
+        case "Sweetarts":
+          labelName = "sweet-tarts";
+          break;
+        case "Trolli":
+          labelName = "trolli";
+          break;
+        default:
+          break;
+      }
+
+      const form = new FormData();
+      form.append("label_name", labelName);
+      Object.entries(formData).forEach(([key, value]) => {
+        form.append(key, value);
+      });
+      const { data } = await submit({
+        data: form,
+      });
+      const responseData = data;
+      setPrizeResponse(responseData, {
+        successCallback: () => {
+          clearTimeout(intervalId.current);
+          clearTimeout(timeLimitId.current);
+        },
+      });
+    };
+
     try {
       const imageSrc = mediaRef.current?.getCanvas();
+
       if (imageSrc) {
         const prediction = await model.current.predict(imageSrc);
 
@@ -50,45 +95,18 @@ export const Scan = () => {
           const className = prediction[i].className;
           const probability = prediction[i].probability.toFixed(2);
 
-          if (className !== "No Candy" && probability >= 0.9) {
-            let labelName = "";
+          if (
+            !candy.current &&
+            className !== "No Candy" &&
+            probability >= 0.9
+          ) {
+            candy.current = className;
+            delayId.current = setTimeout(processScan, 3000);
+          }
 
-            successfulScan.current = true;
-
-            switch (className) {
-              case "Black Forest":
-                labelName = "black-forest";
-                break;
-              case "Laffy Taffy":
-                labelName = "laffy-taffy";
-                break;
-              case "Nerds":
-                labelName = "nerds";
-                break;
-              case "Sweetarts":
-                labelName = "sweet-tarts";
-                break;
-              case "Trolli":
-                labelName = "trolli";
-                break;
-              default:
-                break;
-            }
-
-            const form = new FormData();
-            form.append("label_name", labelName);
-            Object.entries(formData).forEach(([key, value]) => {
-              form.append(key, value);
-            });
-            const { data } = await submit({
-              data: form,
-            });
-            const responseData = data;
-            setPrizeResponse(responseData, {
-              successCallback: () => {
-                interval.current && clearTimeout(interval.current);
-              },
-            });
+          if (className === candy.current && probability < 0.9) {
+            candy.current = "";
+            clearTimeout(delayId.current);
           }
         }
       } else {
@@ -100,18 +118,22 @@ export const Scan = () => {
   }, [formData, setPrizeResponse, submit]);
 
   const startInterval = useCallback(() => {
-    async function intervalFunction() {
-      if (!successfulScan.current) {
-        await capture();
-        interval.current = setTimeout(intervalFunction, 250);
-      }
-    }
+    const intervalFunction = async () => {
+      await capture();
+      intervalId.current = setTimeout(intervalFunction, 250);
+    };
+
+    const resetScanner = () => {
+      clearTimeout(intervalId.current);
+      setPath("/instructions");
+    };
 
     intervalFunction();
-  }, [capture]);
+    timeLimitId.current = setTimeout(resetScanner, 15000);
+  }, [capture, setPath]);
 
   useEffect(() => {
-    async function init() {
+    const init = async () => {
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
 
@@ -120,15 +142,12 @@ export const Scan = () => {
 
       initiated.current = true;
       setTimeout(startInterval, 1500);
-      return () => {
-        interval.current && clearTimeout(interval.current);
-      };
-    }
+    };
 
     if (!initiated.current) {
       init();
     }
-  }, [startInterval, capture]);
+  }, [startInterval]);
 
   return (
     <div className={styles.container}>
