@@ -23,7 +23,7 @@ export const Scan = () => {
   const delayId = useRef(0);
   const timeLimitId = useRef(0);
   const candy = useRef("");
-  const URL = "https://teachablemachine.withgoogle.com/models/uXSFnEyLf/";
+  const URL = "https://teachablemachine.withgoogle.com/models/iWdPzKpco/";
   const model = useRef<any>(null);
   const maxPredictions = useRef(0);
 
@@ -101,7 +101,7 @@ export const Scan = () => {
             probability >= 0.9
           ) {
             candy.current = className;
-            delayId.current = setTimeout(processScan, 3000);
+            delayId.current = setTimeout(processScan, 2000);
           }
 
           if (className === candy.current && probability < 0.9) {
@@ -130,7 +130,7 @@ export const Scan = () => {
 
     intervalFunction();
     timeLimitId.current = setTimeout(resetScanner, 15000);
-  }, [capture, setPath]);
+      }, [capture, setPath]);
 
   useEffect(() => {
     const init = async () => {
