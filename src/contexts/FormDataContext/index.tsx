@@ -2,6 +2,7 @@ import { createContext, useState } from "react";
 
 export type FormDataType = Partial<{
   email: string;
+  confirmation: boolean;
 }>;
 
 export const FormDataContext = createContext<{

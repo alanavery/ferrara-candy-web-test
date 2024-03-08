@@ -23,7 +23,7 @@ export const Scan = () => {
   const delayId = useRef(0);
   const timeLimitId = useRef(0);
   const candy = useRef("");
-  const URL = "https://teachablemachine.withgoogle.com/models/iWdPzKpco/";
+  const URL = "https://teachablemachine.withgoogle.com/models/uXSFnEyLf/";
   const model = useRef<any>(null);
   const maxPredictions = useRef(0);
 
@@ -71,7 +71,7 @@ export const Scan = () => {
       const form = new FormData();
       form.append("label_name", labelName);
       Object.entries(formData).forEach(([key, value]) => {
-        form.append(key, value);
+        form.append(key, String(value));
       });
       const { data } = await submit({
         data: form,
