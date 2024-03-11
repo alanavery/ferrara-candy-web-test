@@ -67,8 +67,8 @@ export const EmailForm = () => {
   const setPrizeResponse = usePrizeResponse();
 
   const onSubmit: SubmitHandler<SchemaType> = async (data) => {
-    const { email, confirmation } = data;
-    spreadFormData({ email, confirmation });
+    const email = data.email.toLowerCase();
+    spreadFormData({ email, confirmation: data.confirmation });
 
     try {
       const form = new FormData();
