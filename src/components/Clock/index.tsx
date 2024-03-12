@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { setInterval, clearInterval } from "worker-timers";
 import styles from "./index.module.css";
 
 const usePreviousValue = (value: string) => {
@@ -95,8 +96,7 @@ export const Clock = ({
     return () => clearInterval(interval); // Clear interval on unmount
   }, [onEnd]);
 
-  const formatNumber = (number: number) =>
-    `0${number}`.slice(-2);
+  const formatNumber = (number: number) => `0${number}`.slice(-2);
 
   return (
     <div>
