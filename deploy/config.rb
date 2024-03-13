@@ -11,5 +11,5 @@ TAGGED_ENVIRONMENTS = %w[
 CLOUDFRONT_DISTRIBUTIONS = {
   dev:        'EOM265TCTD47L',
   stage:      'E3L9T8KVBTR92J',
-  production: ''
+  production: 'E2PG5B0C8P7WGQ'
 }.freeze
