@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+// import { useEffect, useRef, useState } from "react";
 import Countdown from "react-countdown";
 import styles from "./index.module.css";
 
@@ -57,13 +57,15 @@ import styles from "./index.module.css";
 //   );
 // };
 
-export const Clock = ({
-  minutes = 60,
-  onEnd,
-}: {
-  minutes?: number;
-  onEnd?: () => void;
-}) => {
+// {
+//   minutes = 60,
+//   onEnd,
+// }: {
+//   minutes?: number;
+//   onEnd?: () => void;
+// }
+
+export const Clock = () => {
   // const [time, setTime] = useState({
   //   minutes,
   //   seconds: 0,
