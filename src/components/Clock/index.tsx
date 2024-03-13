@@ -78,7 +78,7 @@ export const Clock = () => {
 
   return (
     <div>
-      <Countdown date={Date.now() + 60000 * 1} renderer={renderer} />
+      <Countdown date={Date.now() + 60000 * 60} renderer={renderer} />
       <div className={styles.labels}>
         <span>MINS</span>
         <span>SECS</span>
