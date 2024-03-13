@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { setInterval, clearInterval } from "worker-timers";
 import styles from "./index.module.css";
 
 const usePreviousValue = (value: string) => {
