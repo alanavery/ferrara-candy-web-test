@@ -92,9 +92,9 @@ import { FormDataProvider } from "./contexts/FormDataContext";
 // ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <FormDataProvider>
       <RouteProvider />
     </FormDataProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

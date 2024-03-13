@@ -14,6 +14,7 @@ import { PossibleFlows } from "../../contexts/RouteContext/types";
 import { useAxios } from "../../axios";
 import { useFormDataContext } from "../../hooks/useFormDataContext";
 import { PrizeResponse, usePrizeResponse } from "../../hooks/usePrizeResponse";
+import { Clock } from "../../components/Clock";
 
 const schema = z.object({
   email: z.string().email(),
@@ -114,6 +115,7 @@ export const EmailForm = () => {
         <Text>
           Enter your email below to get started and enter for a chance to WIN!
         </Text>
+        <Clock />
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <TextInput
             center
